@@ -41,13 +41,17 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public StateMachine<PaymentState, PaymentEvent> authorizePayment(Long paymentId) {
+    public StateMachine<PaymentState, PaymentEvent> auth(Long paymentId) {
         StateMachine<PaymentState, PaymentEvent> stateMachine = build(paymentId);
-        sendEventToStateMachine(paymentId, stateMachine, PaymentEvent.AUTH_APPROVED);
+        sendEventToStateMachine(paymentId, stateMachine, PaymentEvent.AUTHORIZE);
 
         return stateMachine;
     }
 
+    /**
+     * @deprecated (Not needed anymore.)
+     */
+    @Deprecated
     @Override
     @Transactional
     public StateMachine<PaymentState, PaymentEvent> declineAuth(Long paymentId) {
