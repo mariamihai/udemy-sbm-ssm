@@ -4,6 +4,7 @@ import guru.springframework.sbmssm.domain.Payment;
 import guru.springframework.sbmssm.domain.PaymentEvent;
 import guru.springframework.sbmssm.domain.PaymentState;
 import guru.springframework.sbmssm.repository.PaymentRepository;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -40,7 +42,9 @@ class PaymentServiceImplTest {
         StateMachine<PaymentState, PaymentEvent> stateMachine = classUnderTest.preAuth(payment.getId());
         Payment preAuthPayment = paymentRepository.getOne(savedPayment.getId());
 
-        assertEquals(stateMachine.getState().getId(), PaymentState.PRE_AUTH);
-        assertEquals(preAuthPayment.getState(), PaymentState.PRE_AUTH);
+        assertThat(stateMachine.getState().getId(),
+                   Matchers.either(Matchers.is(PaymentState.PRE_AUTH)).or(Matchers.is(PaymentState.PRE_AUTH_ERROR)));
+        assertThat(preAuthPayment.getState(),
+                   Matchers.either(Matchers.is(PaymentState.PRE_AUTH)).or(Matchers.is(PaymentState.PRE_AUTH_ERROR)));
     }
 }
